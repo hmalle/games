@@ -4,48 +4,55 @@
 #
 
 import pygame, sys, string, random
+from pygame.locals import *
 
-class Word():
+#Colors
+blue =(0,128,255)
+black=(0,0,0)
+white=(255,255,255)
+red  =(255,0,0)
+
+#Variables
+width =800
+height=600
+
+#Pygame initializations
+pygame.init()
+pygame.font.init()
+font=pygame.font.SysFont('monospace', 30)
+screen=pygame.display.set_mode((width, height))
+pygame.display.set_caption("reverser")
+clock=pygame.time.Clock()
+
+
+
+class Word(pygame.sprite.Sprite):
     def __init__(self):
-        self.text=generate_word(level+4)
+        pygame.sprite.Sprite.__init__(self)
+        self.text=''.join(random.choice(string.ascii_letters)for x in range(5))
         self.x= randint(0, width-10)
         self.y= 0   #Only the y will change
         self.speed=2
         self.level=1
+        
     def update_position(self):
         self.y = self.y + self.speed
 
-class Player():
-    def __init__(self):
-        self.lives=3
-        self.level=1
-
 def main():
-    #Define colors
-    blue =(0,128,255)
-    black=(0,0,0)
-    white=(255,255,255)
-    red  =(255,0,0)
-    #costant variables
-    width =800
-    height=600
     speed=15
     lives=3
     level=1
     score=0
     done=False
 
-    x_pos=0
-    y_pos=0
+    while not done:
+        for event in pygame.event.get():
+            if event.type==QUIT:
+                pygame.quit()
+                sys.exit()
+        #Generate random words that drops on the screen
+        pygame.display.update()
 
-
-    #Pygame initializations
-    pygame.init()
-    pygame.font.init()
-    font=pygame.font.SysFont('monospace', 30)
-    screen=pygame.display.set_mode((width, height))
-    pygame.display.set_caption("reverser")
-    clock=pygame.time.Clock()
 
 if __name__ == '__main__':
     main()
