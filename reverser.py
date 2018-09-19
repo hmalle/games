@@ -25,10 +25,15 @@ screen=pygame.display.set_mode((width, height))
 pygame.display.set_caption("reverser")
 clock=pygame.time.Clock()
 
+def check_answer(wordlist[], user_word):
+    for word in wordlist:
+        if user_word==word:
+           wordlist.remove(word) 
+
 class Word(pygame.sprite.Sprite):
     def __init__(self, level):
         pygame.sprite.Sprite.__init__(self)
-        self.x=0
+        self.x=random.randint(0,width)
         self.y=0
         self.text=self.generate_random_word(level)
 
@@ -41,30 +46,35 @@ class Word(pygame.sprite.Sprite):
     def update_position(self):
         self.y+=5 
 
-    def generate_random_word(self,level):
-        return "".join(random.choice(string.letters+string.digits)for x in range(level+4))
-
-class Player():
-    level=1
+    def generate_random_word(self, char_count):
+        return "".join(random.choice(string.letters+string.digits)for x in range(char_count))
     
 def main():
     #The game loop
     done=False
     player = Player()
-    word=Word(player.level)
-
+    char_count=5
+    word=Word(char_count)
+    wordlist=[]
+    user_word=""
     while not done:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type==pygame.KEYDOWN:
+                if event.key == pygame.K_ENTER:
+                    check_answer(user_word, wordlist)
+ 
         #Generate random words that drops on the screen
         screen.fill(black)
+        for word in wordlist:
+            
         text=font.render(word.text, True, white)
         screen.blit(text,(word.x,word.y))
         pygame.display.update()
         word.update_position()
-        clock.tick(30)      #Frames per second
+        clock.tick(20)      #Frames per second
 
 if __name__ == '__main__':
     main()
