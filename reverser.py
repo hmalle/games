@@ -22,6 +22,7 @@ height=800
 pygame.init()
 pygame.font.init()
 font=pygame.font.SysFont('monospace', 30)
+headerFont=pygame.font.SysFont("monospace", 25)
 screen=pygame.display.set_mode((width, height))
 pygame.display.set_caption("reverser")
 clock=pygame.time.Clock()
@@ -64,15 +65,28 @@ class Word():
         random_word="".join(random.choice(string.letters+string.digits)for x in range(char_count))
         return random_word.lower()
     
+
+class Player():
+    def __init__(self):
+        self.correct=0
+        self.missed=0
+        self.level=1
+        self.time_interval=4
+        self.char_count=5
+
+    def update(self):
+        if self.correct!= 0 and self.correct%17==0:
+            self.level +=1
+            self.char_count +=1
+
+
 def main():
     #The game loop
     done=False
+    player=Player()
     char_count=5
     wordlist=[]
-    wordlist.append(Word(char_count))
-    time_interval=4
-    correct=0
-    missed_words=0
+    wordlist.append(Word(player.char_count))
     user_word=""
     start=time.time()
 
@@ -88,33 +102,41 @@ def main():
                     for word in wordlist:
                         if word.text==user_word:
                             wordlist.remove(word)
-                            correct+=1
+                            player.correct+=1
                     user_word=""
                 #Check the lower case asciis and the digits only
                 elif (event.key>=97 and event.key<=122) or (event.key>=48 and event.key<=57):
                     user_word+=str(unichr(event.key))
+                    #A little redundant code, but checks values without having to press RETURN
+                    for word in wordlist:   
+                        if word.text==user_word:
+                            wordlist.remove(word)
+                            player.correct+=1
+                            user_word=""
                 elif event.key==pygame.K_BACKSPACE:
-                    print("Backspace pressed");
+                    #Enable deleting the last character when backspace is pressed
+                    user_word=user_word[:-1]
                 else:
                     pass
 
         screen.fill(black)
         #Generate a new word after every few seconds
         now=time.time();
-        if now-start>=time_interval:
+        if now-start>=player.time_interval:
             start=time.time()
             wordlist.append(Word(char_count))
 
-        #Render words on the screen and delete those not completeled
+        #Render words on the screen and delete the missed past screen height
         for word in wordlist:
             if word.y > height:
                 wordlist.remove(word)
-                missed_words+=1
+                player.missed+=1
             else:
                 text=font.render(word.text[::-1], True, word.color)
                 screen.blit(text,(word.x,word.y))
                 word.update_word()  #Update here to avoid having anther loop
-
+        player.update();
+        screen.blit(headerFont.render(("Level "+str(player.level)), True, blue),(0,0))
         pygame.display.update()
 
         clock.tick(20) #Frames per second
