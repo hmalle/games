@@ -93,6 +93,8 @@ def main():
                 #Check the lower case asciis and the digits only
                 elif (event.key>=97 and event.key<=122) or (event.key>=48 and event.key<=57):
                     user_word+=str(unichr(event.key))
+                elif event.key==pygame.K_BACKSPACE:
+                    print("Backspace pressed");
                 else:
                     pass
 
