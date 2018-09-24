@@ -15,25 +15,33 @@ color1=(56,104,106)
 orange=(255,165,0)
 tomato_red=(255,60,0)
 
-#Variables
 width =800
-height=600
+height=800
 
 #Pygame initializations
 pygame.init()
 pygame.font.init()
-font=pygame.font.SysFont('monospace', 20)
+font=pygame.font.SysFont('monospace', 30)
 screen=pygame.display.set_mode((width, height))
 pygame.display.set_caption("reverser")
 clock=pygame.time.Clock()
 
 class Word():
-    def __init__(self, level):
-        self.x=random.randint(0,width-10) #TODO: Minus word length box
-        self.y=0
-        self.text=self.generate_random_word(level)
-        self.color=self.get_color()
+    #Variables
+    x=0
+    y=0
+    text=""
+    width=0
+    height=0
 
+    def __init__(self, char_count):
+        self.text=self.generate_random_word(char_count)
+        self.width,self.height=font.size(self.text);
+        self.color=self.get_color()
+        self.x=random.randint(0,width-self.width) #TODO: Minus word length box
+        self.y=0
+ 
+    #To change the color of the text in certain intervals
     def get_color(self):
         if self.y>(height-100):
             return red
@@ -67,15 +75,16 @@ def main():
     missed_words=0
     user_word=""
     start=time.time()
+
     while not done:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
+                pygame.font.quit()
                 pygame.quit()
                 sys.exit()
             #When the enter key is pressed, check the word thats been entered
             if event.type==pygame.KEYDOWN:
                 if event.key==pygame.K_RETURN:
-                    print(user_word)
                     for word in wordlist:
                         if word.text==user_word:
                             wordlist.remove(word)
@@ -100,7 +109,7 @@ def main():
                 wordlist.remove(word)
                 missed_words+=1
             else:
-                text=font.render(word.text, True, word.color)
+                text=font.render(word.text[::-1], True, word.color)
                 screen.blit(text,(word.x,word.y))
                 word.update_word()  #Update here to avoid having anther loop
 
