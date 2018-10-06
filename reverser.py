@@ -44,9 +44,9 @@ class Word():
  
     #To change the color of the text in certain intervals
     def get_color(self):
-        if self.y>(height-100):
+        if self.y>(height*0.85):
             return red
-        elif self.y>(height-200):
+        elif self.y>(height*0.65):
             return orange
         else:
             return white
@@ -73,12 +73,17 @@ class Player():
         self.level=1
         self.time_interval=4
         self.char_count=5
+        self.changed=False #To prevent levels adding up with every screen refresh
 
     def update(self):
-        if self.correct!= 0 and self.correct%17==0:
+        if (self.changed==True) and (self.correct!= 0 and self.correct%17==0) :
             self.level +=1
+            self.changed=False
             self.char_count +=1
 
+    def correct_answer(self):
+        self.changed=True
+        self.correct+=1
 
 def main():
     #The game loop
@@ -102,7 +107,7 @@ def main():
                     for word in wordlist:
                         if word.text==user_word:
                             wordlist.remove(word)
-                            player.correct+=1
+                            player.correct_answer();
                     user_word=""
                 #Check the lower case asciis and the digits only
                 elif (event.key>=97 and event.key<=122) or (event.key>=48 and event.key<=57):
@@ -111,7 +116,7 @@ def main():
                     for word in wordlist:   
                         if word.text==user_word:
                             wordlist.remove(word)
-                            player.correct+=1
+                            player.correct_answer();
                             user_word=""
                 elif event.key==pygame.K_BACKSPACE:
                     #Enable deleting the last character when backspace is pressed
@@ -137,6 +142,7 @@ def main():
                 word.update_word()  #Update here to avoid having anther loop
         player.update();
         screen.blit(headerFont.render(("Level "+str(player.level)), True, blue),(0,0))
+        screen.blit(headerFont.render(("Correct "+str(player.correct)), True, blue),(0,20))
         pygame.display.update()
 
         clock.tick(20) #Frames per second
