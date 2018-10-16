@@ -8,24 +8,26 @@ import pygame as pg
 import sys, string,time
 import random as rand
 
+width, height = 800, 600
+
 class Word():
-    def __init__(self, char_count):
+    def __init__(self, char_count,font):
         self.width=0
         self.height=0
+        self.x=rand.randint(0,width-self.width) #TODO: Minus word length box
+        self.y=0
         self.text=generate_rand_word(char_count)
         self.width,self.height=font.size(self.text)
         self.color=self.get_color()
-        self.x=rand.randint(0,width-self.width) #TODO: Minus word length box
-        self.y=0
  
     #To change the color of the text in certain intervals
     def get_color(self):
         if self.y>(height*0.85):
-            return red
+            return "#ff0000"
         elif self.y>(height*0.65):
-            return orange
+            return "#01baef"
         else:
-            return white
+            return "#000000"
 
     def is_past_height(self):
         if(self.y>height):
@@ -64,8 +66,9 @@ def hex2rgb(hexcode):
 def generate_rand_word(char_count):
     text=""
     for _ in range(char_count):
-    x+=rand.choice(string.letters+string.digits)
-    return rand_word.lower()
+        text+=rand.choice(string.letters+string.digits)
+    print("Genrated word "+text)
+    return text.lower()
 
 def print_wordlist(wordlist):
     for word in wordlist:
@@ -77,9 +80,7 @@ def remove_word(wordlist):
         break
 
 #Main game function
-def gamemain(args):
-    width =800
-    height=800
+def gamemain():
     fps=20
     #pg initializations
     pg.init()
@@ -91,9 +92,10 @@ def gamemain(args):
     clock=pg.time.Clock()
 
     #The game loop
+    start=time.time()
     player=Player()
     wordlist=[]
-    wordlist.append(Word(player.char_count))
+    wordlist.append(Word(player.char_count,font))
     user_word=""
     start=time.time()
 
@@ -125,12 +127,12 @@ def gamemain(args):
                     user_word=user_word[:-1]
                 else:
                     pass
-        screen.fill(black)
+        screen.fill(hex2rgb("#000000"))
         #Generate a new word after every few seconds
         now=time.time()
         if now-start>=player.time_interval:
             start=time.time()
-            wordlist.append(Word(char_count))
+            wordlist.append(Word(char_count,font))
 
         #Render words on the screen and delete the missed past screen height
         for word in wordlist:
@@ -138,12 +140,13 @@ def gamemain(args):
                 wordlist.remove(word)
                 player.missed+=1
             else:
-                text=font.render(word.text[::-1], True, word.color)
+                text=font.render(word.text[::-1], True, hex2rgb(word.color))
                 screen.blit(text,(word.x,word.y))
                 word.update_word()    #Update here to avoid having anther loop
         player.update()
-        screen.blit(headerFont.render(("Level: "+str(player.level)),True,hex2rgb("#0affed)",(0,0))
-        #screen.blit(headerFont.render(("Correct "+str(player.correct)), True, blue),(0,20))
+        #screen.blit(headerFont.render(("Level: "+str(player.level)),True,hex2rgb("#0affed"),(0,0)))
+
+        screen.blit(headerFont.render(("Correct "+str(player.correct)), True, hex2rgb("#0000ff")),(0,20))
         pg.display.update()
         clock.tick(fps) #Frames per second
 
