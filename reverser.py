@@ -39,6 +39,7 @@ class Word:
         word=""
         for _ in range(length):
             word+=choice(letters+digits)
+        word =word.lower()
         self.word = word
         text = self.font.render(word,True, rgb(self.text_color))
         self.width=text.get_width()
@@ -61,9 +62,10 @@ class Player:
     def __init__(self, screen, screen_w, screen_h):
         self.screen_w = screen_w
         self.screen_h = screen_h
+        self.userword=""
         self.words=[]
         self.level=1
-        self.font=pygame.font.SysFont("monospace", 25)
+        self.font=pygame.font.SysFont("comicsansms", 25)
         self.screen=screen
         self.interval=5 #3 seconds between words generation
         self.last_time=time.time()-5 #Initially -5 so self.update generates first word right away
@@ -89,6 +91,12 @@ class Player:
             #screen.blit(w, (word.x, word,y)
             self.screen.blit(word.text,(word.x, word.y))
 
+    def check_userword(self):
+        for word in self.words:
+            if word.word == self.userword:
+                self.words.remove(word)
+                self.userword = ""
+
     def add_new_word(self):
         self.words.append(Word(self.level,self.screen_w, self.screen_h,self.font))
 
@@ -113,6 +121,16 @@ def main():
                 pygame.font.quit()
                 pygame.quit()
                 sys.exit()
+            elif event.type==pygame.KEYDOWN:
+                if (event.key>=97 and event.key<=122)or(event.key>=48 and event.key<=57):
+                    player.userword+=str(unichr(event.key))
+                    player.check_userword();
+                elif event.key == pygame.K_BACKSPACE:
+                    player.userword[:-1]    #Remove the last character from the array
+
+                elif event.key == pygame.K_RETURN:
+                    player.userword = ""
+                    
         screen.fill(rgb(bgcolor))
         player.update()
         pygame.display.update()
@@ -120,4 +138,6 @@ def main():
 
     pygame.quit()
 
-if __name__=='__main__': main()
+if __name__=='__main__': 
+    main()
+
