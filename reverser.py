@@ -31,6 +31,7 @@ class Word:
         self.y=0
         self.text_color = ucolor
         self.width=0
+        self.angle=0    #Rotation angle
         self.height=0
         self.screen_w=width
         self.screen_h=height
@@ -44,7 +45,7 @@ class Word:
         word=""
         for _ in range(length):
             word+=choice(letters+digits)
-        word =word.lower()
+        word = word.lower()
         self.word = word
         text = self.font.render(word,True, rgb(self.text_color))
         self.width=text.get_width()
@@ -53,6 +54,12 @@ class Word:
         self.y= 0
         return text
     
+    def orientation(self):
+        #TODO: Implement the rotation of letters here, Still trying to figure out 
+        #       how rotation is going to work in order to have th letters displayed
+        #       in a sensible way
+        pass
+
     def update_color(self):
         if self.y < 0.6*self.screen_h:
             self.text_color = ucolor
@@ -61,7 +68,7 @@ class Word:
         else:
             self.text_color = lcolor
         #update color of the text to be rendered
-        self.text=self.font.render(self.word,True, rgb(self.text_color))
+        self.text=self.font.render(self.word.upper(),True, rgb(self.text_color))
         
 class Player:
     def __init__(self, screen, screen_w, screen_h):
@@ -72,8 +79,8 @@ class Player:
         self.level=1
         self.correct=0
         self.checklevel = False
-        self.font1=pygame.font.SysFont("Monospace", 25)
-        self.font=pygame.font.SysFont("Monospace", 27)
+        self.font1=pygame.font.SysFont("Monospace", 22)
+        self.font=pygame.font.SysFont("Monospace", 20)
         self.step = 3   #Step 3 pixel steps per tick tock
         self.screen=screen
         self.interval=5 #3 seconds between words generation
